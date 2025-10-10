@@ -1,53 +1,57 @@
-// Mobile nav toggle
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const revealElements = document.querySelectorAll('[data-reveal]');
+
+const revealOnScroll = () => {
+  revealElements.forEach(element => {
+    const elementTop = element.getBoundingClientRect().top;
+    const windowHeight = window.innerHeight;
+    
+    if (elementTop < windowHeight - 100) {
+      element.classList.add('revealed');
+    }
+  });
+};
+
 const navToggle = document.querySelector('.nav-toggle');
 const navLinks = document.querySelector('.nav-links');
-if (navToggle && navLinks) {
-  navToggle.addEventListener('click', () => {
-    const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-    navToggle.setAttribute('aria-expanded', String(!expanded));
-    navLinks.classList.toggle('open');
+
+navToggle.addEventListener('click', () => {
+  navToggle.classList.toggle('active');
+  navLinks.classList.toggle('active');
+});
+
+const header = document.querySelector('.site-header');
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 100) {
+    header.classList.add('scrolled');
+  } else {
+    header.classList.remove('scrolled');
+  }
+  
+  revealOnScroll();
+  
+  const toTopButton = document.getElementById('toTop');
+  if (window.scrollY > 500) {
+    toTopButton.classList.add('visible');
+  } else {
+    toTopButton.classList.remove('visible');
+  }
+});
+
+document.getElementById('toTop').addEventListener('click', () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
   });
+});
 
-  // Close nav after clicking a link (mobile)
-  navLinks.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', () => {
-      if (navLinks.classList.contains('open')) {
-        navLinks.classList.remove('open');
-        navToggle.setAttribute('aria-expanded', 'false');
-      }
-    });
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', () => {
+    navToggle.classList.remove('active');
+    navLinks.classList.remove('active');
   });
-}
+});
 
-// Current year in footer
-const yearEl = document.getElementById('year');
-if (yearEl) yearEl.textContent = String(new Date().getFullYear());
-
-// Scroll reveal animations
-const revealEls = document.querySelectorAll('[data-reveal]');
-if (revealEls.length) {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12 });
-
-  revealEls.forEach((el) => observer.observe(el));
-}
-
-// Back to top button
-const toTop = document.getElementById('toTop');
-if (toTop) {
-  const toggleToTop = () => {
-    if (window.scrollY > 500) toTop.classList.add('show');
-    else toTop.classList.remove('show');
-  };
-  window.addEventListener('scroll', toggleToTop, { passive: true });
-  toggleToTop();
-  toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-}
-
-
+revealOnScroll();
